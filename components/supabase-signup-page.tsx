@@ -16,9 +16,15 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { LockClosedIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 
+function randomInt8() {
+  return Math.floor(Math.random() * 256) - 128;
+}
+
 export default function SupabaseSignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -32,13 +38,20 @@ export default function SupabaseSignUpPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            phone: phone,
+            user_name: userName,
+            bank_id: randomInt8(),
+          },
+        },
       });
 
       if (error) {
         throw error;
       }
       toast({
-        title: "Error",
+        title: "Success",
         description: "Check your email for the verification link!",
         variant: "destructive",
       });
@@ -101,6 +114,40 @@ export default function SupabaseSignUpPage() {
                     placeholder=""
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                  <LockClosedIcon className="h-4 w-4 absolute right-3 top-3.5 text-gray-400" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="userName" className="text-sm font-medium">
+                  User Name
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="userName"
+                    type="text"
+                    placeholder=""
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                  <LockClosedIcon className="h-4 w-4 absolute right-3 top-3.5 text-gray-400" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm font-medium">
+                  Phone Number
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="phone"
+                    type="text"
+                    placeholder=""
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     required
                     className="h-11"
                   />

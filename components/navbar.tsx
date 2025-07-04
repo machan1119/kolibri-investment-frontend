@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -26,34 +26,42 @@ export function Navbar() {
 
   const fetchUserData = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         setIsAuthenticated(false);
-        setUserFullName('');
+        setUserFullName("");
         return;
       }
 
       setIsAuthenticated(true);
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
       if (error || !user) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
         return;
       }
-      
-      const firstName = user.user_metadata?.first_name;
-      const lastName = user.user_metadata?.last_name;
-      
-      if (firstName && lastName) {
-        setUserFullName(`${firstName} ${lastName}`);
+
+      // const firstName = user.user_metadata?.first_name;
+      // const lastName = user.user_metadata?.last_name;?
+      const userName = user.user_metadata?.user_name;
+
+      if (userName) {
+        setUserFullName(userName);
       } else {
-        setUserFullName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User');
+        setUserFullName(
+          user.user_metadata?.full_name || user.email?.split("@")[0] || "User"
+        );
       }
     } catch (error: any) {
-      console.error('Error fetching user:', error);
+      console.error("Error fetching user:", error);
       setIsAuthenticated(false);
-      setUserFullName('');
+      setUserFullName("");
     }
   };
 
@@ -62,10 +70,12 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
         setIsAuthenticated(false);
-        setUserFullName('');
+        setUserFullName("");
       } else {
         fetchUserData();
       }
@@ -80,21 +90,21 @@ export function Navbar() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
+
       setIsAuthenticated(false);
-      setUserFullName('');
-      router.replace('/login');
+      setUserFullName("");
+      router.replace("/login");
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   // Don't render the navbar on the login page
-  if (pathname === '/login') {
+  if (pathname === "/login") {
     return null;
   }
 
@@ -154,7 +164,7 @@ export function Navbar() {
                   variant="ghost"
                   className="hover:bg-primary-foreground/10 text-primary-foreground hover:text-primary-foreground"
                 >
-                  <span>{userFullName || 'Loading...'}</span>
+                  <span>{userFullName || "Loading..."}</span>
                   <User className="w-5 h-5 ml-2" />
                 </Button>
               </DropdownMenuTrigger>
